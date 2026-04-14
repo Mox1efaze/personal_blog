@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{admin/layout}">
+<head>
+    <title>仪表板 - 个人博客后台</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h2 class="mb-4"><i class="bi bi-speedometer2"></i> 仪表板</h2>
+        
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-file-earmark-text display-4 text-primary"></i>
+                        <h3 class="mt-2" th:text="${totalPosts}">0</h3>
+                        <p class="text-muted mb-0">文章总数</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-folder display-4 text-success"></i>
+                        <h3 class="mt-2" th:text="${#lists.size(categories)}">0</h3>
+                        <p class="text-muted mb-0">分类总数</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-tags display-4 text-warning"></i>
+                        <h3 class="mt-2" th:text="${#lists.size(tags)}">0</h3>
+                        <p class="text-muted mb-0">标签总数</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card stat-card">
+                    <div class="card-body text-center">
+                        <i class="bi bi-chat-dots display-4 text-info"></i>
+                        <h3 class="mt-2" th:text="${#lists.size(pendingComments)}">0</h3>
+                        <p class="text-muted mb-0">待审核评论</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0"><i class="bi bi-file-earmark-text"></i> 最新文章</h5>
+                        <a th:href="@{/admin/posts/new}" class="btn btn-primary btn-sm">
+                            <i class="bi bi-plus"></i> 新建文章
+                        </a>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>标题</th>
+                                        <th>日期</th>
+                                        <th>状态</th>
+                                        <th>浏览量</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="post : ${posts}">
+                                        <td th:text="${post.title}">标题</td>
+                                        <td th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}">日期</td>
+                                        <td>
+                                            <span class="badge" th:classappend="${post.published} ? 'bg-success' : 'bg-warning'"
+                                                  th:text="${post.published} ? '已发布' : '草稿'">状态</span>
+                                        </td>
+                                        <td th:text="${post.views}">0</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="bi bi-chat-dots"></i> 待审核评论</h5>
+                    </div>
+                    <div class="card-body">
+                        <div th:if="${!pendingComments.isEmpty()}" class="list-group list-group-flush">
+                            <div th:each="comment : ${pendingComments}" class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <strong th:text="${comment.authorName}">作者</strong>
+                                    <small class="text-muted" th:text="${#temporals.format(comment.createdAt, 'yyyy-MM-dd')}">日期</small>
+                                </div>
+                                <p class="mb-0 small text-truncate" th:text="${comment.content}">评论...</p>
+                            </div>
+                        </div>
+                        <p th:if="${pendingComments.isEmpty()}" class="text-muted text-center py-3">暂无待审核评论</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

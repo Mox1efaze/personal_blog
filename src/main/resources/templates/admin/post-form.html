@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{admin/layout}">
+<head>
+    <title th:text="${post.id} ? '编辑文章' : '新建文章'">新建文章 - 个人博客后台</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        .editor-preview {
+            min-height: 300px;
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+            padding: 1rem;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h2 class="mb-4">
+            <i class="bi bi-pencil"></i> 
+            <span th:text="${post.id} ? '编辑文章' : '新建文章'">新建文章</span>
+        </h2>
+
+        <div class="card">
+            <div class="card-body">
+                <form th:action="${post.id} ? @{/admin/posts/{id}(id=${post.id})} : @{/admin/posts}" method="post">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="mb-3">
+                                <label class="form-label">标题</label>
+                                <input type="text" name="title" class="form-control" th:value="${post.title}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">摘要</label>
+                                <textarea name="summary" class="form-control" rows="3" th:text="${post.summary}"></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">内容</label>
+                                <textarea name="content" id="content" class="form-control" rows="15" th:text="${post.content}" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">预览</label>
+                                <div id="preview" class="editor-preview"></div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="mb-3">
+                                <label class="form-label">封面图片URL</label>
+                                <input type="text" name="coverImage" class="form-control" th:value="${post.coverImage}">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">分类</label>
+                                <select name="categoryId" class="form-select">
+                                    <option value="">选择分类</option>
+                                    <option th:each="category : ${categories}" 
+                                            th:value="${category.id}" 
+                                            th:text="${category.name}"
+                                            th:selected="${post.category?.id == category.id}">分类</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">标签</label>
+                                <div class="border rounded p-3" style="max-height: 200px; overflow-y: auto;">
+                                    <div class="form-check" th:each="tag : ${tags}">
+                                        <input type="checkbox" name="tagIds" th:value="${tag.id}" class="form-check-input"
+                                               th:checked="${#lists.contains(post.tags, tag)}">
+                                        <label class="form-check-label" th:text="${tag.name}">标签</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" name="published" class="form-check-input" id="published" th:checked="${post.published}">
+                                <label class="form-check-label" for="published">发布文章</label>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-save"></i> 保存
+                    </button>
+                    <a th:href="@{/admin/posts}" class="btn btn-secondary">取消</a>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const content = document.getElementById('content');
+                const preview = document.getElementById('preview');
+
+                function updatePreview() {
+                    preview.innerHTML = marked.parse(content.value || '');
+                }
+
+                content.addEventListener('input', updatePreview);
+                updatePreview();
+            });
+        </script>
+    </div>
+</body>
+</html>

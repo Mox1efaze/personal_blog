@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{admin/layout}">
+<head>
+    <title>标签管理 - 个人博客后台</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <h2 class="mb-4"><i class="bi bi-tags"></i> 标签管理</h2>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">添加标签</h5>
+                    </div>
+                    <div class="card-body">
+                        <form th:action="@{/admin/tags}" method="post">
+                            <div class="mb-3">
+                                <label class="form-label">标签名称</label>
+                                <input type="text" name="name" class="form-control" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="bi bi-plus"></i> 添加标签
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>名称</th>
+                                        <th>文章数</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="tag : ${tags}">
+                                        <td th:text="${tag.name}">名称</td>
+                                        <td th:text="${#lists.size(tag.posts)}">0</td>
+                                        <td>
+                                            <form th:action="@{/admin/tags/{id}/delete(id=${tag.id})}" method="post">
+                                                <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('确定要删除吗？')">
+                                                    <i class="bi bi-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p th:if="${tags.isEmpty()}" class="text-muted text-center py-3">暂无标签。</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
